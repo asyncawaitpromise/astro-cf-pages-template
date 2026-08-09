@@ -1,0 +1,9 @@
+name = "astro-cf-pages"
+pages_build_output_dir = "./dist"
+
+# Set your production branch (usually "main")
+# production_branch = "main"
+
+# Uncomment and fill in after running scripts/scaffold.sh:
+# [env.production]
+# routes = [{ pattern = "yourdomain.com", custom_domain = true }]
