@@ -1,11 +1,11 @@
 name: Preview
 
 on:
-  push:
-    branches-ignore: ["main"]
+  pull_request:
+    types: [labeled, synchronize, reopened]
 
 concurrency:
-  group: "preview-${{ github.ref_name }}"
+  group: "preview-${{ github.event.pull_request.number }}"
   cancel-in-progress: true
 
 permissions:
@@ -13,10 +13,13 @@ permissions:
 
 jobs:
   preview:
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -39,4 +42,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=${{ secrets.CF_PAGES_PROJECT }} --branch=${{ github.ref_name }}
+          command: pages deploy dist --project-name=${{ secrets.CF_PAGES_PROJECT }} --branch=pr-${{ github.event.pull_request.number }}
