@@ -25,7 +25,7 @@ for arg in "$@"; do
 done
 
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "Error: $ENV_FILE not found. Run ./scripts/bootstrap.sh first." >&2
+  echo "Error: $ENV_FILE not found. Copy .env.example to .env.local and fill it in." >&2
   exit 1
 fi
 

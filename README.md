@@ -55,7 +55,7 @@ Pushes `CF_ACCOUNT_ID`, `CF_API_TOKEN`, `CF_PAGES_PROJECT` to GitHub Secrets so 
 git add .env.local.enc && git commit -m "chore: add encrypted env"
 ```
 
-Future devs/machines: `./scripts/bootstrap.sh` to decrypt.
+Future devs/machines: `./scripts/env-crypt.sh decrypt` to restore `.env.local`.
 
 ### 5. Trigger your first deploy
 
@@ -95,4 +95,3 @@ pnpm dev
 | `scripts/scaffold.sh` | One-time CF Pages project creation |
 | `scripts/sync-secrets.sh` | Sync `.env.local` → GitHub Secrets |
 | `scripts/env-crypt.sh` | GPG encrypt/decrypt `.env.local` |
-| `scripts/bootstrap.sh` | New machine setup via encrypted env |
