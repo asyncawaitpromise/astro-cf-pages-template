@@ -21,8 +21,16 @@ cp .env.example .env.local
 # fill in CF_ACCOUNT_ID, CF_API_TOKEN, CF_PAGES_PROJECT
 ```
 
-Get your API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens).  
-Create one with **Cloudflare Pages: Edit** permissions. If you'll also set `CF_CUSTOM_DOMAIN`, add **Zone: Zone: Read** too — `scaffold.sh` looks up the zone ID before attaching the domain, and that call needs zone read access.
+Get your API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) → **Create Custom Token**.
+
+Cloudflare's token editor scopes each permission row to a single resource type, so add two rows ("+ Add more"):
+
+| Row | Resources | Permission |
+|---|---|---|
+| 1 (required) | Account → your account | Developer Platform → **Pages** → Edit |
+| 2 (only if setting `CF_CUSTOM_DOMAIN`) | Zone → your domain (or All zones) | DNS & Zones → **Zone** → Read |
+
+Row 2 is read-only and only used by `scaffold.sh` to look up your zone ID — it doesn't grant DNS record access.
 
 ### 2. Scaffold CF Pages project
 
