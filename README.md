@@ -49,6 +49,17 @@ git add .env.local.enc && git commit -m "chore: add encrypted env"
 
 Future devs/machines: `./scripts/bootstrap.sh` to decrypt.
 
+### 5. Trigger your first deploy
+
+Pushes only deploy when tagged (see [CI](#ci) below) — a plain push won't do anything yet:
+
+```bash
+git commit --allow-empty -m "chore: initial deploy [deploy]"
+git push
+```
+
+Or trigger it manually from the Actions tab (**Deploy** → **Run workflow**).
+
 ## CI
 
 | Event | Action |
