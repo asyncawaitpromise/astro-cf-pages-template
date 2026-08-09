@@ -22,7 +22,7 @@ cp .env.example .env.local
 ```
 
 Get your API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens).  
-Create one with **Cloudflare Pages: Edit** permissions.
+Create one with **Cloudflare Pages: Edit** permissions. If you'll also set `CF_CUSTOM_DOMAIN`, add **Zone: Zone: Read** too — `scaffold.sh` looks up the zone ID before attaching the domain, and that call needs zone read access.
 
 ### 2. Scaffold CF Pages project
 
@@ -53,10 +53,14 @@ Future devs/machines: `./scripts/bootstrap.sh` to decrypt.
 
 | Event | Action |
 |---|---|
-| Push to `main` | Build + deploy to production |
-| Push to any other branch | Build + deploy branch preview |
+| Push to `main`/`master` with `[deploy]` anywhere in the commit message | Build + deploy to production |
+| Manual trigger (Actions tab → Deploy → Run workflow) | Build + deploy to production |
+| PR labeled `preview` (or updated/reopened while labeled) | Build + deploy a branch preview |
+| PR closed | Delete that PR's preview deployment |
 
-Branch preview URLs: `https://<branch>.<project>.pages.dev`
+Deploys are opt-in per commit/merge so routine PRs don't ship automatically — put `[deploy]` in the commit message (or PR title, for merge/squash commits) when you actually want it live.
+
+Branch preview URLs: `https://pr-<number>.<project>.pages.dev`
 
 ## Local dev
 

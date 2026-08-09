@@ -4,7 +4,7 @@ import { Rocket } from 'lucide-react'
 const Counter = () => {
   const [count, setCount] = useState(0)
   return (
-    <div class="flex flex-col gap-3">
+    <div className="flex flex-col gap-3">
       <button
         className="btn btn-primary gap-2"
         onClick={() => setCount(c => c + 1)}
