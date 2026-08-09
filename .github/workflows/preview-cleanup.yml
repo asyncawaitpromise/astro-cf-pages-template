@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   cleanup:
-    if: contains(github.event.pull_request.labels.*.name, 'preview')
     runs-on: ubuntu-latest
     steps:
       - name: Delete CF Pages preview deployment
