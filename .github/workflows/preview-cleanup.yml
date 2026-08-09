@@ -1,0 +1,35 @@
+name: Preview Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    if: contains(github.event.pull_request.labels.*.name, 'preview')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete CF Pages preview deployment
+        run: |
+          PR_BRANCH="pr-${{ github.event.pull_request.number }}"
+          ACCOUNT_ID="${{ secrets.CF_ACCOUNT_ID }}"
+          PROJECT="${{ secrets.CF_PAGES_PROJECT }}"
+          TOKEN="${{ secrets.CF_API_TOKEN }}"
+
+          # Get all deployments for this branch
+          DEPLOYMENTS=$(curl -sf \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects/$PROJECT/deployments?branch=$PR_BRANCH" \
+            -H "Authorization: Bearer $TOKEN" \
+            | jq -r '.result[].id')
+
+          for id in $DEPLOYMENTS; do
+            echo "Deleting deployment $id..."
+            curl -sf -X DELETE \
+              "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT_ID/pages/projects/$PROJECT/deployments/$id?force=true" \
+              -H "Authorization: Bearer $TOKEN"
+          done
+
+          echo "Cleanup done for branch $PR_BRANCH"
