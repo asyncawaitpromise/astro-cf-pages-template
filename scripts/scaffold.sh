@@ -2,9 +2,9 @@
 # Validates .env.local before your first deploy.
 #
 # Workers static assets don't need a project-creation step or custom-domain
-# API calls — both happen automatically on `wrangler deploy` based on
-# wrangler.toml. This script just checks the required vars are present and
-# sanity-checks wrangler.toml against CF_CUSTOM_DOMAIN.
+# API calls — scripts/deploy.sh passes both the worker name and (if set)
+# the custom domain straight to `wrangler deploy` as CLI flags. This script
+# just checks the required vars are present before you go further.
 #
 # Usage:
 #   ./scripts/scaffold.sh              # validate .env.local
@@ -44,13 +44,6 @@ for var in CF_ACCOUNT_ID CF_API_TOKEN CF_WORKER_NAME; do
     echo "Error: $var not set in $ENV_FILE" >&2; exit 1
   fi
 done
-
-CF_CUSTOM_DOMAIN="${ENV[CF_CUSTOM_DOMAIN]:-}"
-if [[ -n "$CF_CUSTOM_DOMAIN" ]] && ! grep -q "custom_domain[[:space:]]*=[[:space:]]*true" wrangler.toml; then
-  echo "Warning: CF_CUSTOM_DOMAIN is set but wrangler.toml has no active custom_domain route." >&2
-  echo "  Add under [env.production]:" >&2
-  echo "    routes = [{ pattern = \"$CF_CUSTOM_DOMAIN\", custom_domain = true }]" >&2
-fi
 
 echo "$ENV_FILE looks good."
 echo ""

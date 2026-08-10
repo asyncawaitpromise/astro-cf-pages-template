@@ -6,7 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "deploy": "astro build && npx wrangler deploy --env production",
+    "deploy": "bash scripts/deploy.sh",
     "astro": "astro"
   },
   "dependencies": {

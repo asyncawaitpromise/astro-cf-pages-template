@@ -2,7 +2,7 @@
 
 Static site starter: Astro 5 + React + Tailwind + DaisyUI + Lucide icons, deployed to Cloudflare Workers (static assets).
 
-No server, no Docker, no registry — just `wrangler deploy`. Custom domains are declared in `wrangler.toml` and provisioned automatically on deploy, no dashboard step required.
+No server, no Docker, no registry — just `pnpm run deploy`. Worker name and custom domain live only in `.env.local` / GitHub Secrets and are provisioned automatically on deploy — nothing to edit in `wrangler.toml`, no dashboard step required.
 
 ## Stack
 
@@ -21,7 +21,7 @@ cp .env.example .env.local
 # fill in CF_ACCOUNT_ID, CF_API_TOKEN, CF_WORKER_NAME
 ```
 
-`CF_WORKER_NAME` isn't just a label — it's the identifier you deploy to and access the site through (`https://<name>.<account-subdomain>.workers.dev`, and `<name>-pr-<N>...` for previews). It must exactly match the `name` field in `wrangler.toml`.
+`CF_WORKER_NAME` isn't just a label — it's the identifier you deploy to and access the site through (`https://<name>.<account-subdomain>.workers.dev`, and `<name>-pr-<N>...` for previews). It's set once here; `scripts/deploy.sh` passes it to `wrangler deploy --name`, so it never needs to be repeated in `wrangler.toml`.
 
 Get your API token at [dash.cloudflare.com/profile/api-tokens](https://dash.cloudflare.com/profile/api-tokens) → **Create Custom Token**.
 
@@ -34,17 +34,9 @@ Cloudflare's token editor scopes each permission row to a single resource type, 
 | 3 (only if setting a custom domain) | Zone → your domain (or All zones) | DNS & Zones → **DNS** → Edit |
 | 4 (only if setting a custom domain) | Zone → your domain (or All zones) | **Workers Routes** → Edit |
 
-Rows 2–4 gate three distinct parts of a custom-domain deploy (zone access, DNS record creation, route attachment) — all three are required together if `wrangler.toml` declares a `custom_domain` route; skip them if you're only deploying to the default `workers.dev` subdomain.
+Rows 2–4 gate three distinct parts of a custom-domain deploy (zone access, DNS record creation, route attachment) — all three are required together if you set `CF_CUSTOM_DOMAIN`; skip them if you're only deploying to the default `workers.dev` subdomain.
 
-If you want a custom domain, also set it in `wrangler.toml` under `[env.production]`:
-
-```toml
-[env.production]
-name = "your-worker-name"
-routes = [{ pattern = "yourdomain.com", custom_domain = true }]
-```
-
-`wrangler deploy --env production` then creates the DNS record and provisions the certificate automatically.
+If you want a custom domain, just set `CF_CUSTOM_DOMAIN` below — nothing to edit in `wrangler.toml`. `scripts/deploy.sh` passes it to `wrangler deploy --domains`, which creates the DNS record and provisions the certificate automatically.
 
 ### 2. Validate your env
 
@@ -52,7 +44,7 @@ routes = [{ pattern = "yourdomain.com", custom_domain = true }]
 ./scripts/scaffold.sh
 ```
 
-Checks `.env.local` has the required vars and that `wrangler.toml` matches if you set `CF_CUSTOM_DOMAIN`.
+Checks `.env.local` has the required vars before you go further.
 
 ### 3. Sync CI secrets to GitHub
 
@@ -60,7 +52,7 @@ Checks `.env.local` has the required vars and that `wrangler.toml` matches if yo
 ./scripts/sync-secrets.sh
 ```
 
-Pushes `CF_ACCOUNT_ID`, `CF_API_TOKEN`, `CF_WORKER_NAME` to GitHub Secrets so CI can deploy.
+Pushes `CF_ACCOUNT_ID`, `CF_API_TOKEN`, `CF_WORKER_NAME`, `CF_CUSTOM_DOMAIN` to GitHub Secrets so CI can deploy.
 
 ### 4. Encrypt your env for the repo (optional but recommended)
 
@@ -104,5 +96,6 @@ pnpm dev
 | Script | Purpose |
 |---|---|
 | `scripts/scaffold.sh` | Validates `.env.local` before your first deploy |
+| `scripts/deploy.sh` | Builds and deploys (used by `pnpm run deploy` and CI) |
 | `scripts/sync-secrets.sh` | Sync `.env.local` → GitHub Secrets |
 | `scripts/env-crypt.sh` | GPG encrypt/decrypt `.env.local` |

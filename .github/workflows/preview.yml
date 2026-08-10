@@ -34,12 +34,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build
-        run: pnpm build
-
       - name: Deploy preview to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: deploy --name=${{ secrets.CF_WORKER_NAME }}-pr-${{ github.event.pull_request.number }}
+        run: ./scripts/deploy.sh --name=${{ secrets.CF_WORKER_NAME }}-pr-${{ github.event.pull_request.number }}
+        env:
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
