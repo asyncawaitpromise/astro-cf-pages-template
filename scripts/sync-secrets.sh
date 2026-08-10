@@ -52,7 +52,7 @@ get() { echo "${ENV[$1]:-}"; }
 ROUTING=(
   "CF_ACCOUNT_ID:y"
   "CF_API_TOKEN:y"
-  "CF_PAGES_PROJECT:y"
+  "CF_WORKER_NAME:y"
 )
 
 GH_SECRETS=()

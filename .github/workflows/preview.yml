@@ -37,9 +37,9 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Deploy preview to Cloudflare Pages
+      - name: Deploy preview to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=${{ secrets.CF_PAGES_PROJECT }} --branch=pr-${{ github.event.pull_request.number }}
+          command: deploy --name=${{ secrets.CF_WORKER_NAME }}-pr-${{ github.event.pull_request.number }}
